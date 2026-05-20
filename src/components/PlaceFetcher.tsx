@@ -25,7 +25,7 @@ export function PlaceFetcher({ onFetched }: PlaceFetcherProps) {
     setLoading(false);
 
     if (!response.ok) {
-      setError('Could not fetch reviews');
+      setError('Không thể lấy đánh giá');
       return;
     }
 
@@ -38,7 +38,7 @@ export function PlaceFetcher({ onFetched }: PlaceFetcherProps) {
       <input
         value={placeId}
         onChange={(event) => setPlaceId(event.target.value)}
-        placeholder="Google Place ID"
+        placeholder="Nhập Google Place ID"
         className="min-h-11 flex-1 rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-slate-900"
       />
       <button
@@ -46,7 +46,7 @@ export function PlaceFetcher({ onFetched }: PlaceFetcherProps) {
         disabled={!placeId || loading}
         className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading ? 'Fetching...' : 'Fetch Reviews'}
+        {loading ? 'Đang lấy...' : 'Lấy đánh giá'}
       </button>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </form>
