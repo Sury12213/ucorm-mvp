@@ -20,6 +20,7 @@ export type Review = {
   approved_reply: string | null;
   created_at: string;
   ai_suggestions?: AISuggestion[];
+  places?: Pick<Place, 'name' | 'place_id'> | null;
 };
 
 export type AISuggestion = {
