@@ -15,8 +15,9 @@ export function LogoutButton() {
     <button
       type="button"
       onClick={handleLogout}
-      className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+      className="inline-flex items-center gap-2 rounded-xl border border-outline-variant bg-white px-4 py-2 text-sm font-semibold text-on-surface transition-all hover:border-primary hover:text-primary active:scale-95"
     >
+      <span className="material-symbols-outlined text-lg">logout</span>
       Đăng xuất
     </button>
   );

@@ -67,11 +67,11 @@ export async function POST(_request: Request, { params }: { params: { id: string
     messages: [
       {
         role: 'system',
-        content: 'Bạn là chuyên gia quản trị danh tiếng khách hàng. Chỉ trả lời bằng JSON hợp lệ. Tất cả nội dung phản hồi trong field content phải viết bằng tiếng Việt tự nhiên, chuyên nghiệp.',
+        content: 'Bạn là chuyên gia quản trị danh tiếng khách hàng. Chỉ trả lời bằng JSON hợp lệ. Tất cả nội dung trong field content phải dùng cùng ngôn ngữ với đánh giá gốc, tự nhiên và chuyên nghiệp.',
       },
       {
         role: 'user',
-        content: `Một khách hàng để lại đánh giá này (Điểm: ${review.rating ?? 'Không rõ'}/5):\n"${review.text}"\n\nTạo đúng 3 gợi ý phản hồi bằng tiếng Việt:\n1. "Standard" - Giọng văn chuyên nghiệp, lịch sự.\n2. "Friendly" - Giọng văn thân thiện, gần gũi, tích cực.\n3. "Recovery" - Giọng văn đồng cảm, nhận trách nhiệm, đưa hướng xử lý phù hợp.\n\nTrả về JSON:\n{\n  "suggestions": [\n    { "tone": "Standard", "content": "..." },\n    { "tone": "Friendly", "content": "..." },\n    { "tone": "Recovery", "content": "..." }\n  ]\n}`,
+        content: `Khách hàng để lại đánh giá gốc này (Điểm: ${review.rating ?? 'Không rõ'}/5):\n"${review.text}"\n\nTạo đúng 3 gợi ý phản hồi bằng cùng ngôn ngữ với đánh giá gốc:\n1. "Standard" - Professional and polite tone.\n2. "Friendly" - Warm, personal, cheerful tone.\n3. "Recovery" - Empathetic, accountable tone with a suitable resolution offer.\n\nTrả về JSON:\n{\n  "suggestions": [\n    { "tone": "Standard", "content": "..." },\n    { "tone": "Friendly", "content": "..." },\n    { "tone": "Recovery", "content": "..." }\n  ]\n}`,
       },
     ],
     max_tokens: 500,

@@ -32,13 +32,13 @@ export async function POST(request: Request) {
       google_review_id: review.name ?? `${normalizedPlaceId}-${review.publishTime ?? index}`,
       author_name: review.authorAttribution?.displayName ?? null,
       rating: review.rating ?? null,
-      text: review.text?.text ?? review.originalText?.text ?? null,
+      text: review.originalText?.text ?? review.text?.text ?? null,
       review_time: review.publishTime ?? null,
       status: 'Pending' as const,
     }));
 
     if (reviews.length === 0) {
-      return NextResponse.json({ place, insertedCount: 0, skippedCount: 0 });
+      return NextResponse.json({ place, reviews: [], insertedCount: 0, skippedCount: 0 });
     }
 
     const reviewIds = reviews.map((review) => review.google_review_id);
@@ -62,14 +62,39 @@ export async function POST(request: Request) {
       }
     }
 
+    const { data: fetchedReviews, error: fetchedReviewsError } = await supabase
+      .from('reviews')
+      .select('*, ai_suggestions(*), places(name, place_id)')
+      .eq('place_id', normalizedPlaceId)
+      .order('review_time', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(5);
+
+    if (fetchedReviewsError) {
+      return NextResponse.json({ message: fetchedReviewsError.message }, { status: 500 });
+    }
+
     return NextResponse.json({
       place,
+      reviews: fetchedReviews ?? [],
       insertedCount: newReviews.length,
       skippedCount: reviews.length - newReviews.length,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Không thể lấy đánh giá';
-    const status = message.includes('Google Places request failed: 404') ? 404 : 500;
-    return NextResponse.json({ message }, { status });
+    const rawMessage = error instanceof Error ? error.message : 'Không thể lấy đánh giá';
+
+    if (rawMessage.includes('Google Places request failed: 400') || rawMessage.includes('Google Places request failed: 404')) {
+      return NextResponse.json({ message: 'Không tìm thấy địa điểm. Vui lòng kiểm tra lại Google Place ID.' }, { status: 404 });
+    }
+
+    if (rawMessage.includes('Google Places request failed: 403')) {
+      return NextResponse.json({ message: 'Google Places API chưa được cấp quyền hoặc API key không hợp lệ.' }, { status: 403 });
+    }
+
+    if (rawMessage.includes('Google Places request failed: 429')) {
+      return NextResponse.json({ message: 'Google Places API đang quá giới hạn. Vui lòng thử lại sau.' }, { status: 429 });
+    }
+
+    return NextResponse.json({ message: 'Không thể lấy đánh giá từ Google Places.' }, { status: 500 });
   }
 }
