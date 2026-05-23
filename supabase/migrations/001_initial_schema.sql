@@ -1,11 +1,11 @@
-CREATE TABLE places (
+﻿CREATE TABLE IF NOT EXISTS places (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   place_id TEXT UNIQUE NOT NULL,
   name TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   place_id TEXT NOT NULL REFERENCES places(place_id),
   google_review_id TEXT,
@@ -18,13 +18,10 @@ CREATE TABLE reviews (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE ai_suggestions (
+CREATE TABLE IF NOT EXISTS ai_suggestions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   review_id UUID NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
-  tone TEXT NOT NULL CHECK (tone IN ('Standard', 'Friendly', 'Recovery')),
+  tone TEXT NOT NULL,
   content TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
-
-CREATE INDEX reviews_place_id_idx ON reviews(place_id);
-CREATE INDEX ai_suggestions_review_id_idx ON ai_suggestions(review_id);
